@@ -1,0 +1,93 @@
+#%RAML 1.0
+title: MusicHubAPI
+version: v1
+protocols: [ HTTP ]
+mediaType: application/json
+types: 
+  User: !include User.raml
+  Artist: !include Artist.raml
+
+/auth:
+    /login:
+        post:
+            description: Login to Application
+            headers:
+            body:
+            responses:
+    /register:
+        post:
+            description: Register to Application
+            headers:
+            body:
+            responses:
+    /profile:
+        get:
+            description: Gets a users profile
+            headers: 
+            body: 
+            responses: 
+        post:
+            description: Update users profile
+
+    /library:
+        get:
+            description: Gets users library. 
+            headers: 
+            body: 
+            responses: 
+
+/artists:
+    get:
+        description: Gets all artists
+        headers: 
+        body: 
+        responses: 
+    /{id}:
+        get:
+            description: Gets an artist based on the id
+            headers: 
+            body: 
+            responses:
+        delete:
+            description: Deletes an artist
+            headers:
+            body:
+            responses:
+    /add:
+        post:
+            description: Add an artist
+            headers: 
+            body: 
+            responses: 
+
+/albums:
+    get:
+        description: Gets all Albums
+        headers: 
+        body: 
+        responses: 
+    /{genre}:
+        get:
+            description: Gets all albums based on Genre
+            headers: 
+            body: 
+            responses:  
+    /add:
+        post:
+            description: Adds an album
+            headers: 
+            body: 
+            responses: 
+    /{id}:
+        get:
+            description: Gets an album based on album id
+            headers: 
+            body: 
+            responses: 
+        delete:
+            description: Deletes an album based on album id
+            headers:
+            body:
+            responses:
+        
+
