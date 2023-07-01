@@ -6,88 +6,309 @@ mediaType: application/json
 types: 
   User: !include User.raml
   Artist: !include Artist.raml
+  Album: !include Album.raml
 
 /auth:
-    /login:
-        post:
-            description: Login to Application
-            headers:
-            body:
-            responses:
     /register:
         post:
             description: Register to Application
-            headers:
-            body:
             responses:
-    /profile:
-        get:
-            description: Gets a users profile
-            headers: 
-            body: 
-            responses: 
-        post:
-            description: Update users profile
-
-    /library:
-        get:
-            description: Gets users library. 
-            headers: 
-            body: 
-            responses: 
+                200:
+                    body:
+                        application/json:
+                            example:
+                                {
+                                   "message": "User has been regisistered"
+                                }
+                404:
+                    body:
+                        application/json:
+                            example:
+                                {
+                                    "error": "Data not added successfully." 
+                                }                                            
+                                                  
 
 /artists:
     get:
         description: Gets all artists
-        headers: 
-        body: 
         responses: 
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "artists": [
+                                    {
+                                        "_id": "6018923409basdf123",
+                                        "artistName": "Foo Fighters",
+                                        "location": "Seattle, United States",
+                                        "artistFormed": 1994,
+                                        "active": "Yes",
+                                        "artistBio": "Foo Fighters is an American rock band formed in Seattle in 1994. Foo Fighters was initially formed as a one-man project by former Nirvana drummer Dave Grohl. Following the success of the 1995 eponymous debut album, Grohl recruited a band consisting of Nate Mendel, William Goldsmith, and Pat Smear"
+                                    },
+                                    {
+                                        "_id": "6018923123123basdf123",
+                                        "artistName": "U2",
+                                        "location": "Dublin, Ireland",
+                                        "artistFormed": 1976,
+                                        "active": "Yes",
+                                        "artistBio": "U2 are an Irish rock band from Dublin, formed in 1976. The group consists of Bono, the Edge, Adam Clayton, and Larry Mullen Jr"
+                                    }
+                                ]
+                            }
+                        
+            404:
+                body:
+                    application/json:
+                        example:
+                            {
+                                "error": "Data not found"
+                            }
     /{id}:
         get:
             description: Gets an artist based on the id
-            headers: 
-            body: 
             responses:
+                200:
+                    body:
+                        application/json:
+                            example: 
+                                {
+                                    "_id": "6018923123123basdf123",
+                                    "artistName": "U2",
+                                    "location": "Dublin, Ireland",
+                                    "artistFormed": 1976,
+                                    "active": "Yes",
+                                    "artistBio": "U2 are an Irish rock band from Dublin, formed in 1976. The group consists of Bono, the Edge, Adam Clayton, and Larry Mullen Jr"
+                                }
+                404:
+                    body:
+                        application/json:
+                            example:
+                                {
+                                    "error": "No data found"
+                                }
         delete:
             description: Deletes an artist
-            headers:
-            body:
             responses:
+                200:
+                    body:
+                        application/json:
+                            example:
+                                {
+                                    "message": "Artist has been deleted succesfully."
+                                }
+                400:
+                    body:
+                        application/json:
+                            example:
+                                {
+                                    "error": "Something went wrong with your request."
+                                }
+        /update:
+            post:
+                description: Updates an artist based on ID
+                responses:
+                    200:
+                        body:
+                            application/json:
+                                example:
+                                    {
+                                        "message": "Artist has been updated successfully.
+                                    }
+                    400:
+                        body:
+                            application/json:
+                                example:
+                                    {
+                                        "message": "Something went wrong with your request."
+                                    }
     /add:
         post:
             description: Add an artist
-            headers: 
-            body: 
             responses: 
+                200:
+                    body:
+                        application/json:
+                            example: 
+                                {
+                                    "message": "Artist has been added successfully"
+                                }
+                400:
+                    body:
+                        application/json:
+                            example:
+                                {
+                                    "error": "Something went wrong with your request."
+                                }
 
 /albums:
     get:
         description: Gets all Albums
-        headers: 
-        body: 
         responses: 
+            200:
+                body:
+                    application/json:
+                        example: 
+                            {
+                                "albums": [
+                                    {
+                                        "_id": "6509182398b231023",
+                                        "albumName": "But Here We Are",
+                                        "albumArtist": "681290390dadsf12038",
+                                        "tracks": 10,
+                                        "releaseYear": 2023,
+                                        "genre": "Rock"
+                                    },
+                                    {  
+                                        "_id": "65091bvc1231023",
+                                        "albumName": "Greatest Hits (ABBA)",
+                                        "albumArtist": "68190dadsf12038",
+                                        "tracks": 15,
+                                        "releaseYear": 1975,
+                                        "genre": "Pop"
+                                    }                                    
+                                ]
+                            }
+            404:
+                body:
+                    application/json:
+                        example: 
+                            {
+                                "error": "No data was found." 
+                            }
+                
     /{genre}:
         get:
             description: Gets all albums based on Genre
-            headers: 
-            body: 
-            responses:  
+            responses:
+                200: 
+                    body:
+                        application/json:
+                            example: 
+                                {
+                                    "albums": [
+                                        {
+                                            "_id": "6509182398b231023",
+                                            "albumName": "But Here We Are",
+                                            "albumArtist": "681290390dadsf12038",
+                                            "tracks": 10,
+                                            "releaseYear": 2023,
+                                            "genre": "Rock"
+                                        },
+                                        {
+                                            "_id": "651231238b231023",
+                                            "albumName": "Rumours",
+                                            "albumArtist": "612390dadsf12038",
+                                            "tracks": 10,
+                                            "releaseYear": 1975,
+                                            "genre": "Rock"
+                                        }
+                                    ]
+                                }
+                404:
+                    body:
+                        application/json:
+                            example:
+                                {
+                                    "error": "No data was found based on your request."
+                                }
     /add:
         post:
             description: Adds an album
-            headers: 
-            body: 
             responses: 
+                200:
+                    body:
+                        application/json:
+                            example: 
+                                {
+                                    "message": "Album was succesfully added."
+                                }
+                400:
+                    body:
+                        application/json:
+                            example:
+                                {
+                                    "error": "Something went wrong with your request."
+                                }
     /{id}:
         get:
             description: Gets an album based on album id
-            headers: 
-            body: 
             responses: 
+                200:
+                    body:
+                        application/json:
+                            example: 
+                                {
+                                    "_id": "651231238b231023",
+                                    "albumName": "Rumours",
+                                    "albumArtist": "612390dadsf12038",
+                                    "tracks": 10,
+                                    "releaseYear": 1975,
+                                    "genre": "Rock"
+                                }
+
+                404:
+                    body:
+                        application/json:
+                            example:
+                                {
+                                    "error": "No data found based on your request."
+                                }   
         delete:
             description: Deletes an album based on album id
-            headers:
-            body:
             responses:
-        
+        /update:
+            post:
+                description: Update an album based on id
+                responses: 
+                    200:
+                        body:
+                            application/json:
+                                example:
+                                    {
+                                        message: "Album has been updated."
+                                    }
+                    400:
+                        body:
+                            application/json:
+                                example:
+                                    {
+                                        "error": "Something went wrong with your request".
+                                    }
 
+/search/{searchTerm}:
+        get:
+            description: Get information based on a searchTerm
+            responses:
+                200:
+                    body:
+                        application/json:
+                            example:  
+                                {
+                                    "searchResults": [
+                                        {
+                                            "_id": "102389asbasd12313",
+                                            "albumName": "JESUS IS KING",
+                                            "albumArtist": "b1230989asdf123"
+                                            "tracks": 11
+                                            "releaseYear": 2019
+                                            "genre": "Hip-Hop, Christian"
+                                        },
+                                        {
+                                            "_id": "6018923123123basdf123",
+                                            "artistName": "Jesus Culture",
+                                            "location": "California, United States",
+                                            "artistFormed": 1999,
+                                            "active": "Yes",
+                                            "artistBio": "Jesus Culture is a Christian revivalist youth-oriented organization that was formed at the Bethel Church of Redding, California, in the United States. Jesus Culture Ministry hosts conferences and operates a record label, Jesus Culture Music. In 2013, Jesus Culture moved to plant a church in Sacramento. Meetings started on September 14, 2014."
+                                        }
+                                    ]
+                                }
+                404:
+                    body: 
+                        application/json:
+                            example: 
+                                {
+                                    "error": "No data was found based on that request."
+                                }
