@@ -160,3 +160,23 @@ module.exports.albums_add_post = async (req, res) => {
         }
     }
 }
+
+module.exports.albums_genre_get = async (req, res) => {
+    let results = []
+    let genreName = await Album.find({
+        "$or": [
+            {genre: {$regex: req.params.genre}}
+        ]
+    })
+
+    if (genreName.length === 0) {
+        res.status(404).json({
+            error: "Data not found."
+        })
+    } else {
+        results.push(genreName)
+        res.status(200).json({
+            results
+        })
+    }
+}
