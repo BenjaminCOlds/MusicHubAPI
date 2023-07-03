@@ -2,11 +2,14 @@ const express = require('express');
 const Album = require('./models/Album');
 const Artist = require('./models/Artist');
 const { connect } = require('./Database');
-const apiRoutes = require('./routes/MusicHubRoutes')
+const apiRoutes = require('./routes/MusicHubRoutes');
+const bodyParser = require('body-parser');
 
 const app = express();
 
 app.use(express.json());
+app.use(bodyParser.json());
+
 
 
 const port = 3000;
