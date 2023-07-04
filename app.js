@@ -3,6 +3,7 @@ const Album = require('./models/Album');
 const Artist = require('./models/Artist');
 const { connect } = require('./Database');
 const apiRoutes = require('./routes/MusicHubRoutes');
+const authRoutes = require('./routes/AuthRoutes')
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -19,4 +20,5 @@ app.listen(port, () => {
     console.log(`Great news! The application has started on port ${port}`);
 })
 
+app.use(authRoutes)
 app.use(apiRoutes)
