@@ -62,7 +62,7 @@ module.exports.albums_id_get = async (req, res) => {
         })
     } catch (err) {
         res.status(404).json({
-            error: "No data was found."
+            error: "No data was found based on your request."
         })
     }
 }
@@ -116,7 +116,7 @@ module.exports.artists_add_post = async (req, res) => {
 
     if (artist.artistName === undefined || artist.location === undefined || artist.artistFormed === undefined || artist.active === undefined || artist.artistBio === undefined) {
         // Checks if there's an error with submitted data. 
-        res.status(406).json({
+        res.status(404).json({
             error: "Data not inputted correctly."
         })
     } else {
@@ -129,7 +129,7 @@ module.exports.artists_add_post = async (req, res) => {
                 artist: `Successfully created ${(await artist)._id}`
             })
         } catch (err) {
-            res.status(406).json({
+            res.status(404).json({
                 error: "Data not inputted correctly."
             })
         }
@@ -141,7 +141,7 @@ module.exports.albums_add_post = async (req, res) => {
     let album = req.body;
 
     if (album.albumName === undefined || album.albumArtist === undefined || album.tracks === undefined || album.releaseYear === undefined || album.genre === undefined) {
-        res.status(406).json({
+        res.status(404).json({
             error: "Invalid data."
         })
     } else {
@@ -154,7 +154,7 @@ module.exports.albums_add_post = async (req, res) => {
                 album: `Successfully created ${(await album)._id}`
             })
         } catch (err) {
-            res.status(406).json({
+            res.status(404).json({
                 error: "Invalid data."
             })
         }
@@ -177,6 +177,72 @@ module.exports.albums_genre_get = async (req, res) => {
         results.push(genreName)
         res.status(200).json({
             results
+        })
+    }
+}
+ 
+module.exports.albums_update_patch = async (req, res) => {
+    // Patch Request for Albums model. 
+    try {
+        let { albumName, albumArtist, tracks, releaseYear, genre } = req.body;
+        let album = await Album.findByIdAndUpdate(req.params.id,
+            {
+                $set: {
+                    albumName, albumArtist, tracks, releaseYear, genre
+                }
+            })
+        res.status(201).json({
+            message: `${req.params.id} has been updated.`
+        })
+    } catch (err) {
+        res.status(404).json({
+            error: `${req.params.id} could not be found in the database.`
+        })
+    }
+}
+
+module.exports.artists_update_patch = async (req, res) => {
+    // Patch Request for Artist model
+    try {
+        let { artistName, location, artistFormed, active, artistBio } = req.body;
+        let artist = await Artist.findByIdAndUpdate(req.params.id,
+            {
+                $set: {
+                    artistName, location, artistFormed, active, artistBio
+                }
+            })
+        res.status(201).json({
+            message: `${req.params.id} has been updated.`
+        })
+    } catch (err) {
+        res.status(404).json({
+            error: `${req.params.id} could not be found in the database.`
+        })
+    }
+}
+
+module.exports.artist_delete = async(req, res) => {
+    try {
+        const deletedArtist = await Artist.findByIdAndDelete(req.params.id)
+        res.status(202).json({
+            deletedArtist: deletedArtist
+        })
+    } catch (err) {
+        res.status(404).json({
+            error: `${req.params.id} was not deleted successfully.`
+        })
+    }
+}
+
+module.exports.album_delete = async(req, res) => {
+    try {
+        const deletedAlbum = await Album.findByIdAndDelete(req.params.id)
+        res.status(202).json({
+            deletedAlbum: deletedAlbum
+        })
+    } catch (err) {
+        res.status(404).json({
+            error: `${req.params.id} was not deleted succesfully.`
         })
     }
 }
