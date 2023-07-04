@@ -34,11 +34,13 @@ const handleErrors = (err) => {
 
 const loginAge = 7 * 24 * 60 * 60
 
+// JWT Creation Function
 const createJWT = (id) => {
-    return jwt.sign({ id }), secret , {
-         expiresIn: loginAge
-    }
+    return jwt.sign({ id }, secret.secret, {
+        expiresIn: loginAge
+    })
 }
+
 
 module.exports.register_post = async (req, res) => {
     const { email, password } = req.body
@@ -60,10 +62,15 @@ module.exports.login_post =async  (req, res) => {
     try {
         const user = await User.login(email, password);
         const token = createJWT(user._id);
-        res.cookie('jwt', token, { httpOnly: true , maxAge: loginAge * 1000});
+        res.cookie('jwt', token, { httpOnly: true, maxAge: loginAge * 1000});
         res.status(200).json( {user: user._id})
     } catch (err) {
         const errors = handleErrors(err);
         res.status(400).json({ errors })
     }
+}
+
+module.exports.logout_post = (req, res) => {
+    res.cookie('jwt', '', { maxAge: 1})
+    res.status(201).json({message:  "You have been logged out."})
 }
