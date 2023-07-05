@@ -72,5 +72,5 @@ module.exports.login_post =async  (req, res) => {
 
 module.exports.logout_post = (req, res) => {
     res.cookie('jwt', '', { maxAge: 1})
-    res.status(201).json({message:  "You have been logged out."})
+    res.status(200).json({message:  "You have been logged out."})
 }
