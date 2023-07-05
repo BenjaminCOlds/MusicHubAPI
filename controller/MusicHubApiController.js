@@ -11,14 +11,20 @@ module.exports.artists_get = async (req, res) => {
         if (token) {
             jwt.verify(token, secret.secret, async (err) => {
                 if (err) {
-                    res.status(403).json({ error: "Invalid Token" })
+                    res.status(403).json({ error: "You are not authenticated." })
                 } else {
-                    res.status(200).json( { artists: await Artist.find({})})
+                    let artists = await Artist.find({})
+                    if (artists.length === 0) {
+                        res.status(404).json( { error: "No artists found" })
+                    } else {
+                        res.status(200).json( { artists: artists})
+                    }
+                    
                 }
             })
         } else {
             res.status(403).json({ error: "You are not authenticated." })
-        }    
+        }
     } catch (err) {
         res.status(403).json({ error: "You are not authenticated"})
     } 
@@ -30,16 +36,21 @@ module.exports.artists_id_get = async(req, res) => {
         if (token) {
             jwt.verify(token, secret.secret, async (err) => {
                 if (err) {
-                    res.status(403).json({ error: "Invalid Token" })
+                    res.status(403).json({ error: "You are not authenticated." })
                 } else {
-                    res.status(200).json( { artists: await Artist.findById({artist: req.params.id})})
+                    try {
+                        let data = await Artist.findById(req.params.id)
+                        res.status(200).json( { artist: data})    
+                    } catch (err) {
+                        res.status(404).json({ error: "Could not find that artist."} )
+                    }
                 }
             })
         } else {
             res.status(403).json({ error: "You are not authenticated." })
         }    
     } catch (err) {
-        res.status(403).json({ error: "You are not authenticated"})
+        res.status(403).json({ error: "You are not authenticated."})
     } 
 }
 
@@ -49,14 +60,20 @@ module.exports.albums_get = async (req, res) => {
         if (token) {
             jwt.verify(token, secret.secret, async (err) => {
                 if (err) {
-                    res.status(403).json({ error: "Invalid Token" })
+                    res.status(403).json({ error: "You are not authenticated." })
                 } else {
-                    res.status(200).json( { albums: await Album.find({})})
+                    let albums = await Album.find({})
+                    if (albums.length === 0) {
+                        res.status(404).json( { error: "No albums found" })
+                    } else {
+                        res.status(200).json( { albums: albums})
+                    }
+                    
                 }
             })
         } else {
             res.status(403).json({ error: "You are not authenticated." })
-        }    
+        }
     } catch (err) {
         res.status(403).json({ error: "You are not authenticated"})
     } 
@@ -68,16 +85,21 @@ module.exports.albums_id_get = async (req, res) => {
         if (token) {
             jwt.verify(token, secret.secret, async (err) => {
                 if (err) {
-                    res.status(403).json({ error: "Invalid Token" })
+                    res.status(403).json({ error: "You are not authenticated." })
                 } else {
-                    res.status(200).json( { artists: await Album.findById({album: req.params.id})})
+                    try {
+                        let data = await Album.findById(req.params.id)
+                        res.status(200).json( { album: data})    
+                    } catch (err) {
+                        res.status(404).json({ error: "Could not find that album."} )
+                    }
                 }
             })
         } else {
             res.status(403).json({ error: "You are not authenticated." })
         }    
     } catch (err) {
-        res.status(403).json({ error: "You are not authenticated"})
+        res.status(403).json({ error: "You are not authenticated."})
     } 
 }
 
@@ -87,7 +109,7 @@ module.exports.search_get = async (req, res) => {
         if (token) {
             jwt.verify(token, secret.secret, async (err) => {
                 if (err) {
-                    res.status(403).json({ error: "Invalid Token" })
+                    res.status(403).json({ error: "You are not authenticated." })
                 } else {
                     let data = []
                     let albumName = await Album.find({
@@ -148,7 +170,7 @@ module.exports.artists_add_post = async (req, res) => {
         if (token) {
             jwt.verify(token, secret.secret, async (err) => {
                 if (err) {
-                    res.status(403).json({ error: "Invalid Token" })
+                    res.status(403).json({ error: "You are not authenticated." })
                 } else {
                     let artist = req.body;
 
@@ -188,9 +210,30 @@ module.exports.albums_add_post = async (req, res) => {
         if (token) {
             jwt.verify(token, secret.secret, async (err) => {
                 if (err) {
-                    res.status(403).json({ error: "Invalid Token" })
+                    res.status(403).json({ error: "You are not authenticated." })
                 } else {
-                    res.status(200).json( { artists: await Album.findById({album: req.params.id})})
+                    let album = req.body;
+
+                    if (album.albumName === undefined || album.albumArtist === undefined || album.tracks === undefined || album.releaseYear === undefined || album.genre === undefined) {
+                        // Checks if there's an error with submitted data. 
+                        res.status(409).json({
+                            error: "Data not inputted correctly."
+                        })
+                    } else {
+                        try {
+                            let { albumName, albumArtist, tracks, releaseYear, genre} = req.body;
+                            const album = Album.create({
+                                albumName, albumArtist, tracks, releaseYear, genre
+                            })
+                            res.status(201).json({
+                                album: `Successfully created ${(await album)._id}`
+                            })
+                        } catch (err) {
+                            res.status(409).json({
+                                error: "Data not inputted correctly."
+                            })
+                        }
+                    }
                 }
             })
         } else {
@@ -208,7 +251,7 @@ module.exports.albums_genre_get = async (req, res) => {
         if (token) {
             jwt.verify(token, secret.secret, async (err) => {
                 if (err) {
-                    res.status(403).json({ error: "Invalid Token" })
+                    res.status(403).json({ error: "You are not authenticated." })
                 } else {
                     let results = []
                     let genreName = await Album.find({
@@ -244,7 +287,7 @@ module.exports.albums_update_patch = async (req, res) => {
         if (token) {
             jwt.verify(token, secret.secret, async (err) => {
                 if (err) {
-                    res.status(403).json({ error: "Invalid Token" })
+                    res.status(403).json({ error: "You are not authenticated." })
                 } else {
                     try {
                         let { albumName, albumArtist, tracks, releaseYear, genre } = req.body;
@@ -254,7 +297,7 @@ module.exports.albums_update_patch = async (req, res) => {
                                     albumName, albumArtist, tracks, releaseYear, genre
                                 }
                             })
-                        res.status(201).json({
+                        res.status(202).json({
                             message: `${req.params.id} has been updated.`
                         })
                     } catch (err) {
@@ -276,22 +319,37 @@ module.exports.albums_update_patch = async (req, res) => {
 
 module.exports.artists_update_patch = async (req, res) => {
     // Patch Request for Artist model
+    const token = req.cookies.jwt
     try {
-        let { artistName, location, artistFormed, active, artistBio } = req.body;
-        let artist = await Artist.findByIdAndUpdate(req.params.id,
-            {
-                $set: {
-                    artistName, location, artistFormed, active, artistBio
+        if (token) {
+            jwt.verify(token, secret.secret, async (err) => {
+                if (err) {
+                    res.status(403).json({ error: "You are not authenticated." })
+                } else {
+                    try {
+                        let { artistName, location, artistFormed, active, artistBio } = req.body;
+                        let artist = await Artist.findByIdAndUpdate(req.params.id,
+                            {
+                                $set: {
+                                    artistName, location, artistFormed, active, artistBio
+                                }
+                            })
+                        res.status(202).json({
+                            message: `${req.params.id} has been updated.`
+                        })
+                    } catch (err) {
+                        res.status(404).json({
+                            error: `${req.params.id} could not be found in the database.`
+                        })
+                    }
                 }
             })
-        res.status(201).json({
-            message: `${req.params.id} has been updated.`
-        })
+        } else {
+            res.status(403).json({ error: "You are not authenticated." })
+        }    
     } catch (err) {
-        res.status(404).json({
-            error: `${req.params.id} could not be found in the database.`
-        })
-    }
+        res.status(403).json({ error: "You are not authenticated"})
+    } 
 }
 
 module.exports.artist_delete = async(req, res) => {

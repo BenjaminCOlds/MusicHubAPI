@@ -8,307 +8,434 @@ types:
   Artist: !include Artist.raml
   Album: !include Album.raml
 
-/auth:
-    /register:
-        post:
-            description: Register to Application
-            responses:
-                200:
-                    body:
-                        application/json:
-                            example:
-                                {
-                                   "message": "User has been regisistered"
-                                }
-                404:
-                    body:
-                        application/json:
-                            example:
-                                {
-                                    "error": "Data not added successfully." 
-                                }                                            
-                                                  
-
-/artists:
-    get:
-        description: Gets all artists
+/users/register:
+    post:
+        description: "Registers a user to the API and creates a MongoDB instance."
         responses: 
+            201:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "user": "64a49eb22db3bbcbc96b6d04"
+                            }
+            409:
+                body:
+                    application/json:
+                        example: |
+                        {
+                            "errors": {
+                                "email": "that email is already registered",
+                                "password": ""
+                            }
+                        },
+                        {
+                            "errors": {
+                                "email": "",
+                                "password": "Sorry your password isn't long enough"
+                            }
+                        }
+
+/users/login:
+    post:
+        description: Logins a user to the API and creates a JWT.
+        responses:
             200:
                 body:
                     application/json:
                         example: |
                             {
-                                "artists": [
-                                    {
-                                        "_id": "6018923409basdf123",
-                                        "artistName": "Foo Fighters",
-                                        "location": "Seattle, United States",
-                                        "artistFormed": 1994,
-                                        "active": "Yes",
-                                        "artistBio": "Foo Fighters is an American rock band formed in Seattle in 1994. Foo Fighters was initially formed as a one-man project by former Nirvana drummer Dave Grohl. Following the success of the 1995 eponymous debut album, Grohl recruited a band consisting of Nate Mendel, William Goldsmith, and Pat Smear"
-                                    },
-                                    {
-                                        "_id": "6018923123123basdf123",
-                                        "artistName": "U2",
-                                        "location": "Dublin, Ireland",
-                                        "artistFormed": 1976,
-                                        "active": "Yes",
-                                        "artistBio": "U2 are an Irish rock band from Dublin, formed in 1976. The group consists of Bono, the Edge, Adam Clayton, and Larry Mullen Jr"
-                                    }
+                                "jwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YTQ5ZWIyMmRiM2JiY2JjOTZiNmQwNCIsImlhdCI6MTY4ODUxMDM4NSwiZXhwIjoxNjg5MTE1MTg1fQ.Kk2-Fsp4VPPgsWuliLyzbjkHZKkO7inM1AnJJACeTyQ"
+                            }
+            401:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "errors": {
+                                    "email": "",
+                                    "password": "That password is incorrect"
+                                }
+                            }
+
+/users/logout:
+    post:
+        description: Logs a user out.
+        responses:
+            200:
+                {
+                    "message": "You have been logged out."
+                }
+
+/artists:
+    get:
+        description: Gets all artists. 
+        responses:
+            200:
+                body:
+                    application/json:
+                        {
+                            "artists": [
+                                {
+                                    "_id": 120398123810bafsda123,
+                                    "artistName": "Foo Fighters",
+                                    "location": "Seattle",
+                                    "artistFormed": 1994,
+                                    "active": "Yes",
+                                    "artistBio": "Foo Fighters were formed in 1994 in Seattle, United States"
+                                }
+                            ]
+                        }
+                        
+            403:
+                body:
+                    application/json:
+                        {
+                            "error": "You are not authenticated."
+                        }
+
+            404:
+                body:
+                    application/json:
+                        {
+                            "error": "No artists found."
+                        }
+
+/artists/{id}:
+    get:
+        description: Gets a artist based upon id. 
+        responses:
+            200:
+                body:
+                    application/json:
+                        {
+                            "artist": 
+                                {
+                                    "_id": 120398123810bafsda123,
+                                    "artistName": "Foo Fighters",
+                                    "location": "Seattle",
+                                    "artistFormed": 1994,
+                                    "active": "Yes",
+                                    "artistBio": "Foo Fighters were formed in 1994 in Seattle, United States"
+                                }
+                        }
+
+            403:
+                body:
+                    application/json:
+                        {
+                            "error": "You are not authenticated."
+                        }
+
+            404:
+                body:
+                    application/json:
+                        {
+                            "error": "Could not find that artist."
+                        }
+
+/albums:
+    get:
+        description: Gets all albums. 
+        responses:
+            200:
+                body:
+                    application/json:
+                        {
+                            "albums": [
+                                {
+                                    "_id": "64a3ede5985b27282229660b",
+                                    "albumName": "Suicide",
+                                    "albumArtist": "Suicide",
+                                    "tracks": 7,
+                                    "releaseYear": 1977,
+                                    "genre": "Rock",
+                                    "__v": 0
+                                }
+                            ]
+                        }
+                        
+            403:
+                body:
+                    application/json:
+                        {
+                            "error": "You are not authenticated."
+                        }
+
+            404:
+                body:
+                    application/json:
+                        {
+                            "error": "No albums found."
+                        }
+
+/albums/{id}:
+    get:
+        description: Gets an album based upon id. 
+        responses:
+            200:
+                body:
+                    application/json:
+                        {
+                            "album": {
+                                "_id": "64a3ede5985b27282229660b",
+                                "albumName": "Suicide",
+                                "albumArtist": "Suicide",
+                                "tracks": 7,
+                                "releaseYear": 1977,
+                                "genre": "Rock",
+                                "__v": 0
+                            }
+                        }
+
+            403:
+                body:
+                    application/json:
+                        {
+                            "error": "You are not authenticated."
+                        }
+
+            404:
+                body:
+                    application/json:
+                        {
+                            "error": "Could not find that album."
+                        }
+
+/search/{id}:
+    get:
+        description: Show search results
+        responses:
+            200:
+                body:
+                    application/json:
+                        example:
+                            {
+                                "results": [
+                                    [
+                                        {
+                                            "_id": "64a3ede5985b27282229660b",
+                                            "albumName": "Suicide",
+                                            "albumArtist": "Suicide",
+                                            "tracks": 7,
+                                            "releaseYear": 1977,
+                                            "genre": "Rock",
+                                            "__v": 0
+                                        }
+                                    ]
                                 ]
                             }
-                        
+            403:
+                body:
+                    application/json:
+                        example:
+                            {
+                                "error": "You are not authenticated"
+                            }
+
             404:
                 body:
                     application/json:
                         example:
                             {
-                                "error": "Data not found"
+                                "error": "No data was found based on your search criteria."
                             }
-    /{id}:
-        get:
-            description: Gets an artist based on the id
-            responses:
-                200:
-                    body:
-                        application/json:
-                            example: 
-                                {
-                                    "_id": "6018923123123basdf123",
-                                    "artistName": "U2",
-                                    "location": "Dublin, Ireland",
-                                    "artistFormed": 1976,
-                                    "active": "Yes",
-                                    "artistBio": "U2 are an Irish rock band from Dublin, formed in 1976. The group consists of Bono, the Edge, Adam Clayton, and Larry Mullen Jr"
-                                }
-                404:
-                    body:
-                        application/json:
-                            example:
-                                {
-                                    "error": "No data found"
-                                }
-        delete:
-            description: Deletes an artist
-            responses:
-                200:
-                    body:
-                        application/json:
-                            example:
-                                {
-                                    "message": "Artist has been deleted succesfully."
-                                }
-                400:
-                    body:
-                        application/json:
-                            example:
-                                {
-                                    "error": "Something went wrong with your request."
-                                }
-        /update:
-            post:
-                description: Updates an artist based on ID
-                responses:
-                    200:
-                        body:
-                            application/json:
-                                example:
-                                    {
-                                        "message": "Artist has been updated successfully.
-                                    }
-                    400:
-                        body:
-                            application/json:
-                                example:
-                                    {
-                                        "message": "Something went wrong with your request."
-                                    }
-    /add:
-        post:
-            description: Add an artist
-            responses: 
-                200:
-                    body:
-                        application/json:
-                            example: 
-                                {
-                                    "message": "Artist has been added successfully"
-                                }
-                400:
-                    body:
-                        application/json:
-                            example:
-                                {
-                                    "error": "Something went wrong with your request."
-                                }
 
-/albums:
+/artists/add:
+    post:
+        description: Adds an Artist
+        responses:
+            201:
+                body:
+                    application/json:
+                        example:
+                            {
+                                "artist": "Successfully created 120398123810bafsda123"
+                            }
+            403:
+                body:
+                    application/json:
+                        example:
+                            {
+                                "error": "You are not authenticated."
+                            }
+            409:
+                body:
+                    application/json:
+                        example:
+                            {
+                                "error": "Data not inputted correctly."
+                            }
+
+
+
+/albums/add:
+    post:
+        description: Adds an Album
+        responses:
+            201:
+                body:
+                    application/json:
+                        example:
+                            {
+                                "album": "Successfully created bva98123810bafsda123"
+                            }
+            403:
+                body:
+                    application/json:
+                        example:
+                            {
+                                "error": "You are not authenticated."
+                            }
+            409:
+                body:
+                    application/json:
+                        example:
+                            {
+                                "error": "Data not inputted correctly."
+                            }
+
+/albums/genre/{genre}:
     get:
-        description: Gets all Albums
-        responses: 
+        description: Gets albums based on Genre.
+        responses:
             200:
                 body:
                     application/json:
-                        example: 
+                        example:
                             {
-                                "albums": [
-                                    {
-                                        "_id": "6509182398b231023",
-                                        "albumName": "But Here We Are",
-                                        "albumArtist": "Foo Fighters",
-                                        "tracks": 10,
-                                        "releaseYear": 2023,
-                                        "genre": "Rock"
-                                    },
-                                    {  
-                                        "_id": "65091bvc1231023",
-                                        "albumName": "Greatest Hits (ABBA)",
-                                        "albumArtist": "Abba",
-                                        "tracks": 15,
-                                        "releaseYear": 1975,
-                                        "genre": "Pop"
-                                    }                                    
+                                "results": [
+                                    [
+                                        {
+                                            "_id": "64a3ede5985b27282229660b",
+                                            "albumName": "Suicide",
+                                            "albumArtist": "Suicide",
+                                            "tracks": 7,
+                                            "releaseYear": 1977,
+                                            "genre": "Rock",
+                                            "__v": 0
+                                        }
+                                    ]
                                 ]
+                            }
+
+            403:
+                body:
+                    applicaition/json:
+                        example:
+                            {
+                                "error": "You are not authenticated."
                             }
             404:
                 body:
                     application/json:
-                        example: 
+                        example:
                             {
-                                "error": "No data was found." 
+                                "error": "Data not found."
                             }
-                
-    /{genre}:
-        get:
-            description: Gets all albums based on Genre
-            responses:
-                200: 
-                    body:
-                        application/json:
-                            example: 
-                                {
-                                    "albums": [
-                                        {
-                                            "_id": "6509182398b231023",
-                                            "albumName": "But Here We Are",
-                                            "albumArtist": "Foo Fighters",
-                                            "tracks": 10,
-                                            "releaseYear": 2023,
-                                            "genre": "Rock"
-                                        },
-                                        {
-                                            "_id": "651231238b231023",
-                                            "albumName": "Rumours",
-                                            "albumArtist": "Fleetwood Mac",
-                                            "tracks": 10,
-                                            "releaseYear": 1975,
-                                            "genre": "Rock"
-                                        }
-                                    ]
-                                }
-                404:
-                    body:
-                        application/json:
-                            example:
-                                {
-                                    "error": "No data was found based on your request."
-                                }
-    /add:
-        post:
-            description: Adds an album
-            responses: 
-                200:
-                    body:
-                        application/json:
-                            example: 
-                                {
-                                    "message": "Album was succesfully added."
-                                }
-                400:
-                    body:
-                        application/json:
-                            example:
-                                {
-                                    "error": "Something went wrong with your request."
-                                }
-    /{id}:
-        get:
-            description: Gets an album based on album id
-            responses: 
-                200:
-                    body:
-                        application/json:
-                            example: 
-                                {
-                                    "_id": "651231238b231023",
-                                    "albumName": "Rumours",
-                                    "albumArtist": "Fleetwood Mac",
-                                    "tracks": 10,
-                                    "releaseYear": 1975,
-                                    "genre": "Rock"
-                                }
 
-                404:
-                    body:
-                        application/json:
-                            example:
-                                {
-                                    "error": "No data found based on your request."
-                                }   
-        delete:
-            description: Deletes an album based on album id
-            responses:
-        /update:
-            post:
-                description: Update an album based on id
-                responses: 
-                    200:
-                        body:
-                            application/json:
-                                example:
-                                    {
-                                        message: "Album has been updated."
-                                    }
-                    400:
-                        body:
-                            application/json:
-                                example:
-                                    {
-                                        "error": "Something went wrong with your request".
-                                    }
+/albums/update/{id}:
+    patch:
+        description: Updates an album based upon a given ID
+        responses:
+            202:
+                body:
+                    application/json:
+                        example:
+                            {
+                                "message": "123089ba123 has been updated."
+                            }
+            403: 
+                body:
+                    applicaiton/json:
+                        example:
+                            {
+                                "error": "You are not authenticated."
+                            }
+            404:
+                body:
+                    application/json:
+                        example:
+                            {
+                                "error": "123089ba123 could not be found in the database."
+                            }
 
-/search/{searchTerm}:
-        get:
-            description: Get information based on a searchTerm
-            responses:
-                200:
-                    body:
-                        application/json:
-                            example:  
-                                {
-                                    "searchResults": [
-                                        {
-                                            "_id": "102389asbasd12313",
-                                            "albumName": "JESUS IS KING",
-                                            "albumArtist": "Kanye West"
-                                            "tracks": 11
-                                            "releaseYear": 2019
-                                            "genre": "Hip-Hop, Christian"
-                                        },
-                                        {
-                                            "_id": "6018923123123basdf123",
-                                            "artistName": "Jesus Culture",
-                                            "location": "California, United States",
-                                            "artistFormed": 1999,
-                                            "active": "Yes",
-                                            "artistBio": "Jesus Culture is a Christian revivalist youth-oriented organization that was formed at the Bethel Church of Redding, California, in the United States. Jesus Culture Ministry hosts conferences and operates a record label, Jesus Culture Music. In 2013, Jesus Culture moved to plant a church in Sacramento. Meetings started on September 14, 2014."
-                                        }
-                                    ]
-                                }
-                404:
-                    body: 
-                        application/json:
-                            example: 
-                                {
-                                    "error": "No data was found based on that request."
-                                }
+/artist/update/{id}:
+    patch:
+        description: Updates an artist based upon a given ID
+        responses:
+            202:
+                body:
+                    application/json:
+                        example:
+                            {
+                                "message": "123089ba123 has been updated."
+                            }
+            403: 
+                body:
+                    applicaiton/json:
+                        example:
+                            {
+                                "error": "You are not authenticated."
+                            }
+            404:
+                body:
+                    application/json:
+                        example:
+                            {
+                                "error": "123089ba123 could not be found in the database."
+                            }
+
+/artists/delete/{id}:
+    delete:
+        description: Deletes an artist based upon an id
+        responses:
+        202:
+            body:
+                application/json:
+                    example:
+                        {
+                            "message": "1239890basdf123 has been deleted."
+                        }
+        403:
+            body:
+                applicaiton/json:
+                    example:
+                        {
+                            "error": "You are not authenticated."
+                        }
+
+        404:
+            body:
+                application/json:
+                    example:
+                        {
+                            "error": "1239890basdf123 could not be found in the database."
+                        }
+
+/albums/delete/{id}:
+    delete:
+        description: Deletes an album based upon an id
+        responses:
+        202:
+            body:
+                application/json:
+                    example:
+                        {
+                            "message": "1239890basdf123 has been updated."
+                        }
+        403:
+            body:
+                applicaiton/json:
+                    example:
+                        {
+                            "error": "You are not authenticated."
+                        }
+
+        404:
+            body:
+                application/json:
+                    example:
+                        {
+                            "error": "1239890basdf123 could not be found in the database."
+                        }
